@@ -12,26 +12,51 @@ if (empty($_SESSION['cart'])) {
 $user_id = $_SESSION['user_id'];
 $alamat  = mysqli_real_escape_string($conn, $_POST['alamat']);
 $catatan = mysqli_real_escape_string($conn, $_POST['catatan'] ?? '');
+$metode_pembayaran = mysqli_real_escape_string($conn, $_POST['metode_pembayaran']);
 
-// tambahan data acara (kalau belum ada di form, bisa default)
+// default acara
 $tanggal_acara = date('Y-m-d');
 $waktu_acara   = date('H:i:s');
 
-// buat kode pesanan unik
+// kode pesanan
 $kode_pesanan = 'ORD-' . date('YmdHis') . rand(100,999);
+
+// =========================
+// Upload Bukti Pembayaran
+// =========================
+$bukti_pembayaran = null;
+
+if (!empty($_FILES['bukti_pembayaran']['name'])) {
+
+    $folder = "uploads/bukti/";
+    if (!is_dir($folder)) {
+        mkdir($folder, 0777, true);
+    }
+
+    $ext = pathinfo($_FILES['bukti_pembayaran']['name'], PATHINFO_EXTENSION);
+    $nama_file = 'bukti_' . time() . '_' . rand(100,999) . '.' . $ext;
+    $path = $folder . $nama_file;
+
+    if (move_uploaded_file($_FILES['bukti_pembayaran']['tmp_name'], $path)) {
+        $bukti_pembayaran = $nama_file;
+    } else {
+        echo "Gagal upload bukti pembayaran";
+        exit;
+    }
+}
 
 mysqli_begin_transaction($conn);
 
 try {
 
     // =========================
-    // Ambil data menu dari cart
+    // Ambil menu dari cart
     // =========================
     $ids = implode(',', array_keys($_SESSION['cart']));
     $query = mysqli_query($conn, "SELECT * FROM menu WHERE id IN ($ids)");
 
     $total_harga = 0;
-    $min_porsi = 0;
+    $jumlah_porsi = 0;
     $items = [];
 
     while ($row = mysqli_fetch_assoc($query)) {
@@ -39,7 +64,7 @@ try {
         $subtotal = $row['harga'] * $qty;
 
         $total_harga += $subtotal;
-        $min_porsi += $qty;
+        $jumlah_porsi += $qty;
 
         $items[] = [
             'menu_id' => $row['id'],
@@ -51,13 +76,13 @@ try {
     }
 
     // =========================
-    // Insert ke tabel pesanan
+    // Insert Pesanan
     // =========================
     $sql_pesanan = "
         INSERT INTO pesanan 
-        (user_id, kode_pesanan, tanggal_acara, waktu_acara, alamat_pengiriman, min_porsi, total_harga, catatan)
+        (user_id, kode_pesanan, tanggal_acara, waktu_acara, alamat_pengiriman, jumlah_porsi, total_harga, catatan, metode_pembayaran, bukti_pembayaran, status_pembayaran)
         VALUES
-        ('$user_id', '$kode_pesanan', '$tanggal_acara', '$waktu_acara', '$alamat', '$min_porsi', '$total_harga', '$catatan')
+        ('$user_id', '$kode_pesanan', '$tanggal_acara', '$waktu_acara', '$alamat', '$jumlah_porsi', '$total_harga', '$catatan', '$metode_pembayaran', '$bukti_pembayaran', 'menunggu_verifikasi')
     ";
 
     if (!mysqli_query($conn, $sql_pesanan)) {
@@ -67,7 +92,7 @@ try {
     $pesanan_id = mysqli_insert_id($conn);
 
     // =========================
-    // Insert ke pesanan_detail
+    // Insert Detail Pesanan
     // =========================
     foreach ($items as $item) {
         $sql_detail = "
@@ -82,9 +107,6 @@ try {
         }
     }
 
-    // =========================
-    // Commit & clear cart
-    // =========================
     mysqli_commit($conn);
     unset($_SESSION['cart']);
 

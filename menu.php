@@ -98,7 +98,6 @@ $result_kategori = mysqli_query($conn, $query_kategori);
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
                     <li class="nav-item"><a class="nav-link active" href="menu.php">Menu</a></li>
-                    <li class="nav-item"><a class="nav-link" href="paket.php">Paket</a></li>
                     <?php if (is_logged_in()): ?>
                         <li class="nav-item"><a class="nav-link" href="cart.php">
                             <i class="fas fa-shopping-cart"></i> Keranjang

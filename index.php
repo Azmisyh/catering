@@ -51,7 +51,6 @@ if (!is_logged_in()) {
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link active" href="index.php">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="menu.php">Menu</a></li>
-                    <li class="nav-item"><a class="nav-link" href="paket.php">Paket</a></li>
                     <?php if (is_logged_in()): ?>
                         <li class="nav-item"><a class="nav-link" href="cart.php">
                             <i class="fas fa-shopping-cart"></i> Keranjang
@@ -193,7 +192,6 @@ if (!is_logged_in()) {
                     <h5>Link Cepat</h5>
                     <ul class="list-unstyled">
                         <li><a href="menu.php" class="text-white">Menu</a></li>
-                        <li><a href="paket.php" class="text-white">Paket</a></li>
                         <li><a href="tentang.php" class="text-white">Tentang Kami</a></li>
                     </ul>
                 </div>

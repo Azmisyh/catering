@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 08, 2026 at 01:59 AM
+-- Generation Time: Jan 15, 2026 at 02:28 AM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -84,7 +84,8 @@ INSERT INTO `chat` (`id`, `user_id`, `pesan`, `pengirim`, `is_read`, `created_at
 (41, 3, 'tes', 'admin', 1, '2026-01-06 16:23:29'),
 (42, 4, 'halo kak', 'user', 1, '2026-01-07 13:37:47'),
 (43, 4, 'halo', 'admin', 1, '2026-01-07 13:48:43'),
-(44, 5, 'okey', 'admin', 0, '2026-01-07 13:48:50');
+(44, 5, 'okey', 'admin', 0, '2026-01-07 13:48:50'),
+(45, 3, 'tes', 'admin', 0, '2026-01-15 01:22:58');
 
 -- --------------------------------------------------------
 
@@ -138,7 +139,8 @@ INSERT INTO `menu` (`id`, `kategori_id`, `nama_menu`, `deskripsi`, `harga`, `gam
 (6, 3, 'Brownies Coklat', 'Brownies lembut rasa coklat', 5000, NULL, 'tersedia', '2026-01-05 14:35:49'),
 (7, 4, 'Es Teh Manis', 'Teh manis segar dingin', 3000, NULL, 'tersedia', '2026-01-05 14:35:49'),
 (8, 4, 'Jus Jeruk', 'Jus jeruk segar', 5000, NULL, 'tersedia', '2026-01-05 14:35:49'),
-(13, 4, 'tes', 'ytes', 10000, NULL, 'tersedia', '2026-01-06 15:34:08');
+(13, 4, 'tes', 'ytes', 10000, NULL, 'tersedia', '2026-01-06 15:34:08'),
+(14, 1, 'Paket Ayam goyeng', 'a', 20000, 'uploads/menu/1768437260_6968360cbfaaa.jpg', 'tersedia', '2026-01-15 00:34:20');
 
 -- --------------------------------------------------------
 
@@ -193,17 +195,26 @@ CREATE TABLE `pesanan` (
   `jumlah_porsi` int(11) NOT NULL,
   `total_harga` decimal(10,2) NOT NULL,
   `catatan` text DEFAULT NULL,
+  `metode_pembayaran` varchar(50) DEFAULT NULL,
+  `bukti_pembayaran` varchar(255) DEFAULT NULL,
   `status` enum('pending','dikonfirmasi','diproses','selesai','dibatalkan') DEFAULT 'pending',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `status_pembayaran` enum('belum_bayar','menunggu_verifikasi','lunas') DEFAULT 'belum_bayar'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `pesanan`
 --
 
-INSERT INTO `pesanan` (`id`, `user_id`, `kode_pesanan`, `tanggal_acara`, `waktu_acara`, `alamat_pengiriman`, `jumlah_porsi`, `total_harga`, `catatan`, `status`, `created_at`) VALUES
-(3, 3, 'ORD-20260107154506663', '2026-01-07', '15:45:06', 'a', 1, 30000.00, 'a', 'selesai', '2026-01-07 14:45:06'),
-(4, 3, 'ORD-20260107155500835', '2026-01-07', '15:55:00', 'a', 2, 60000.00, 'a', 'pending', '2026-01-07 14:55:00');
+INSERT INTO `pesanan` (`id`, `user_id`, `kode_pesanan`, `tanggal_acara`, `waktu_acara`, `alamat_pengiriman`, `jumlah_porsi`, `total_harga`, `catatan`, `metode_pembayaran`, `bukti_pembayaran`, `status`, `created_at`, `status_pembayaran`) VALUES
+(3, 3, 'ORD-20260107154506663', '2026-01-07', '15:45:06', 'a', 1, 30000.00, 'a', NULL, NULL, 'selesai', '2026-01-07 14:45:06', 'belum_bayar'),
+(4, 3, 'ORD-20260107155500835', '2026-01-07', '15:55:00', 'a', 2, 60000.00, 'a', NULL, NULL, 'selesai', '2026-01-07 14:55:00', 'belum_bayar'),
+(5, 2, 'ORD-20260115015316511', '2026-01-15', '01:53:16', 'a', 1, 20000.00, 'a', NULL, NULL, 'dibatalkan', '2026-01-15 00:53:16', 'belum_bayar'),
+(6, 2, 'ORD-20260115015948368', '2026-01-15', '01:59:48', 'a', 1, 20000.00, 'a', NULL, NULL, 'dibatalkan', '2026-01-15 00:59:48', 'belum_bayar'),
+(7, 2, 'ORD-20260115020128350', '2026-01-15', '02:01:28', 'a', 1, 20000.00, 'a', NULL, NULL, 'dibatalkan', '2026-01-15 01:01:28', 'belum_bayar'),
+(8, 3, 'ORD-20260115020346819', '2026-01-15', '02:03:46', 'a', 1, 20000.00, 'a', NULL, NULL, 'pending', '2026-01-15 01:03:46', 'belum_bayar'),
+(9, 3, 'ORD-20260115020925318', '2026-01-15', '02:09:25', 'a', 1, 20000.00, 'a', 'Transfer Bank', 'bukti_1768439365_315.jpg', 'pending', '2026-01-15 01:09:25', 'menunggu_verifikasi'),
+(10, 3, 'ORD-20260115021538616', '2026-01-15', '02:15:38', 'a', 1, 20000.00, 'a', 'Transfer Bank', 'bukti_1768439738_309.jpg', 'pending', '2026-01-15 01:15:38', 'menunggu_verifikasi');
 
 -- --------------------------------------------------------
 
@@ -228,7 +239,13 @@ CREATE TABLE `pesanan_detail` (
 
 INSERT INTO `pesanan_detail` (`id`, `pesanan_id`, `menu_id`, `paket_id`, `nama_item`, `harga`, `jumlah`, `subtotal`) VALUES
 (1, 3, 2, NULL, 'Nasi Box Rendang', 30000.00, 1, 30000.00),
-(2, 4, 2, NULL, 'Nasi Box Rendang', 30000.00, 2, 60000.00);
+(2, 4, 2, NULL, 'Nasi Box Rendang', 30000.00, 2, 60000.00),
+(5, 5, 14, NULL, 'Paket Ayam goyeng', 20000.00, 1, 20000.00),
+(6, 6, 14, NULL, 'Paket Ayam goyeng', 20000.00, 1, 20000.00),
+(7, 7, 14, NULL, 'Paket Ayam goyeng', 20000.00, 1, 20000.00),
+(8, 8, 14, NULL, 'Paket Ayam goyeng', 20000.00, 1, 20000.00),
+(9, 9, 14, NULL, 'Paket Ayam goyeng', 20000.00, 1, 20000.00),
+(10, 10, 14, NULL, 'Paket Ayam goyeng', 20000.00, 1, 20000.00);
 
 -- --------------------------------------------------------
 
@@ -352,7 +369,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `chat`
 --
 ALTER TABLE `chat`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- AUTO_INCREMENT for table `kategori`
@@ -364,7 +381,7 @@ ALTER TABLE `kategori`
 -- AUTO_INCREMENT for table `menu`
 --
 ALTER TABLE `menu`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `paket`
@@ -382,13 +399,13 @@ ALTER TABLE `paket_detail`
 -- AUTO_INCREMENT for table `pesanan`
 --
 ALTER TABLE `pesanan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `pesanan_detail`
 --
 ALTER TABLE `pesanan_detail`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `testimoni`

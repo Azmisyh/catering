@@ -25,6 +25,14 @@ $result = mysqli_query($conn, $query);
         .status-diproses { background:#0d6efd;color:#fff;padding:5px 12px;border-radius:20px; }
         .status-selesai { background:#198754;color:#fff;padding:5px 12px;border-radius:20px; }
         .status-dibatalkan { background:#dc3545;color:#fff;padding:5px 12px;border-radius:20px; }
+
+        .badge-pembayaran {
+            background:#6f42c1;
+            color:#fff;
+            padding:6px 12px;
+            border-radius:20px;
+            font-size: 13px;
+        }
     </style>
 </head>
 <body>
@@ -49,6 +57,7 @@ $result = mysqli_query($conn, $query);
     <?php while ($pesanan = mysqli_fetch_assoc($result)): ?>
         <div class="card mb-3 shadow-sm">
             <div class="card-body">
+
                 <div class="row">
                     <div class="col-md-4">
                         <strong>Tanggal Pesan</strong><br>
@@ -56,7 +65,7 @@ $result = mysqli_query($conn, $query);
                     </div>
                     <div class="col-md-4">
                         <strong>Total</strong><br>
-                        <?= format_rupiah($pesanan['total']) ?>
+                        <?= format_rupiah($pesanan['total_harga']) ?>
                     </div>
                     <div class="col-md-4 text-end">
                         <span class="status-<?= $pesanan['status'] ?>">
@@ -67,14 +76,41 @@ $result = mysqli_query($conn, $query);
 
                 <hr>
 
-                <p><strong>Alamat Pengiriman:</strong><br>
-                    <?= nl2br(htmlspecialchars($pesanan['alamat'])) ?>
+                <!-- METODE PEMBAYARAN -->
+                <p>
+                    <strong>Metode Pembayaran:</strong><br>
+                    <span class="badge-pembayaran">
+                        <?= htmlspecialchars($pesanan['metode_pembayaran']) ?>
+                    </span>
+                </p>
+
+                <!-- BUKTI PEMBAYARAN -->
+                <?php if (!empty($pesanan['bukti_pembayaran'])): ?>
+                    <p>
+                        <strong>Bukti Pembayaran:</strong><br>
+                        <a href="uploads/bukti/<?= $pesanan['bukti_pembayaran'] ?>" 
+                           target="_blank" 
+                           class="btn btn-outline-success btn-sm mt-1">
+                            <i class="fas fa-image"></i> Lihat Bukti
+                        </a>
+                    </p>
+                <?php else: ?>
+                    <p>
+                        <strong>Bukti Pembayaran:</strong><br>
+                        <span class="text-muted">Belum ada bukti</span>
+                    </p>
+                <?php endif; ?>
+
+                <p>
+                    <strong>Alamat Pengiriman:</strong><br>
+                    <?= nl2br(htmlspecialchars($pesanan['alamat_pengiriman'])) ?>
                 </p>
 
                 <?php if ($pesanan['catatan']): ?>
-                <p><strong>Catatan:</strong><br>
-                    <?= nl2br(htmlspecialchars($pesanan['catatan'])) ?>
-                </p>
+                    <p>
+                        <strong>Catatan:</strong><br>
+                        <?= nl2br(htmlspecialchars($pesanan['catatan'])) ?>
+                    </p>
                 <?php endif; ?>
 
                 <h6 class="mt-3">Detail Pesanan</h6>
@@ -97,25 +133,26 @@ $result = mysqli_query($conn, $query);
                         $r_detail = mysqli_query($conn, $q_detail);
 
                         while ($d = mysqli_fetch_assoc($r_detail)):
-                            $subtotal = $d['harga'] * $d['qty'];
+                            $subtotal = $d['harga'] * $d['jumlah'];
                         ?>
                         <tr>
                             <td><?= $d['nama_menu'] ?></td>
                             <td class="text-end"><?= format_rupiah($d['harga']) ?></td>
-                            <td class="text-center"><?= $d['qty'] ?></td>
+                            <td class="text-center"><?= $d['jumlah'] ?></td>
                             <td class="text-end"><?= format_rupiah($subtotal) ?></td>
                         </tr>
                         <?php endwhile; ?>
                         <tr class="table-light">
                             <td colspan="3" class="text-end"><strong>Total</strong></td>
-                            <td class="text-end"><strong><?= format_rupiah($pesanan['total']) ?></strong></td>
+                            <td class="text-end"><strong><?= format_rupiah($pesanan['total_harga']) ?></strong></td>
                         </tr>
                     </tbody>
                 </table>
 
-                <a href="chat.php" class="btn btn-primary btn-sm">
+                <a href="chat.php?pesanan=<?= $pesanan['kode_pesanan'] ?>" class="btn btn-primary btn-sm">
                     <i class="fas fa-comments"></i> Chat Admin
                 </a>
+
             </div>
         </div>
     <?php endwhile; ?>

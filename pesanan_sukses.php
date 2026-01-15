@@ -122,7 +122,7 @@ $detail = mysqli_query($conn, "
 
             <div class="text-center mt-4">
                 <a href="index.php" class="btn btn-primary">Kembali ke Beranda</a>
-                <a href="riwayat_pesanan.php" class="btn btn-outline-secondary">
+                <a href="pesanan.php" class="btn btn-outline-secondary">
                     Riwayat Pesanan
                 </a>
             </div>

@@ -5,6 +5,7 @@ if (!is_admin()) {
     redirect('../index.php');
 }
 
+
 // Statistik
 $total_pesanan = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM pesanan"))['total'];
 $total_pending = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM pesanan WHERE status = 'pending'"))['total'];
